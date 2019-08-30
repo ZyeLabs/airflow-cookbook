@@ -14,13 +14,17 @@
 
 # User configuration
 default["airflow"]["airflow_package"] = 'apache-airflow' # use 'airflow' for version <= 1.8.0
-default["airflow"]["version"] = nil
+default["airflow"]["version"] = "1.10.4"
 default["airflow"]["user"] = "airflow"
 default["airflow"]["group"] = "airflow"
-default["airflow"]["user_uid"] = 9999
-default["airflow"]["group_gid"] = 9999
+# default["airflow"]["user_uid"] = 9999
+# default["airflow"]["group_gid"] = 9999
 default["airflow"]["user_home_directory"] = "/home/#{node["airflow"]["user"]}"
 default["airflow"]["shell"] = "/bin/bash"
+
+# db config
+default['airflow']['postgres']['user']      = "airflow"
+default['airflow']['postgres']['passowrd']  = "airflow"
 
 # General config
 default["airflow"]["directories_mode"] = "0775"
@@ -34,18 +38,64 @@ default["airflow"]["env_path"] = node["platform_family"] == "debian" ? "/etc/def
 
 # Python config
 default["airflow"]["python_runtime"] = "3"
-default["airflow"]["python_version"] = "3.5"
+default["airflow"]["python_version"] = "3.6"
 default["airflow"]["pip_version"] = '18.0'
-default["airflow"]["get_pip_url"] = 'https://bootstrap.pypa.io/3.3/get-pip.py'
 
-# Configurations stated below are required for this cookbook and will be written to airflow.cfg, you can add more config by using structure like:
-# default["airflow"]["config"]["CONFIG_SECTION"]["CONFIG_ENTRY"]
 
-# Core
-default["airflow"]["config"]["core"]["airflow_home"] = node["platform"] == "ubuntu" ? "/usr/local/lib/airflow" : "/usr/lib/airflow"
+#
+# Core Settings --------------------------------------------------------------
+#
+
+default["airflow"]["config"]["core"]["airflow_home"] = node["platform"] == "ubuntu" ? "/usr/local/lib/airflow" : "/var/lib/airflow"
 default["airflow"]["config"]["core"]["dags_folder"] = "#{node["airflow"]["config"]["core"]["airflow_home"]}/dags"
 default["airflow"]["config"]["core"]["plugins_folder"] = "#{node["airflow"]["config"]["core"]["airflow_home"]}/plugins"
 default["airflow"]["config"]["core"]["sql_alchemy_conn"] = "sqlite:///#{node["airflow"]["config"]["core"]["airflow_home"]}/airflow.db"
-default["airflow"]["config"]["core"]["fernet_key"] = "G3jB5--jCQpRYp7hwUtpfQ_S8zLRbRMwX8tr3dehnNU=" # Be sure to change this for production
-# Celery
-default["airflow"]["config"]["celery"]["celeryd_concurrency"] = 16
+default['airflow']["config"]["core"]["base_log_folder"]  = "#{node["airflow"]["config"]["core"]["airflow_home"]}/logs"
+# max number of simultaneous task instances allowed
+default['airflow']["config"]["core"]["parallelism"] = 32
+# task instances allowed to run concurrently by the scheduler
+default['airflow']["config"]["core"]["dag_concurrency"] = 16
+default['airflow']["config"]["core"]["dags_are_paused_at_creation"] = true
+default['airflow']["config"]["core"]["non_pooled_task_slot_count"] = 128
+default['airflow']["config"]["core"]["max_active_runs_per_dag"] = 16
+# How long before timing out a python file import while filling the DagBag
+default['airflow']["config"]["core"]["dagbag_import_timeout"] = 60
+# possible values: SequentialExecutor, LocalExecutor, CeleryExecutor
+default['airflow']["config"]["core"]["executor"]  = "LocalExecutor"
+default['airflow']['config']['core']['load_examples'] = false
+default['airflow']['config']['core']['default_timezone'] = "system"
+
+# The default owner assigned to each new operator, unless provided explicitly or passed via `default_args`
+default['airflow']["config"]["operators"]["default_owner"]  = 'airflow'
+
+
+#
+# web server configs ---------------------------------------------------
+#
+
+default['airflow']["config"]["webserver"]["web_server_worker_timeout"]  = 120
+default['airflow']["config"]["webserver"]["web_server_port"] = 8888
+# default['airflow']["config"]["webserver"]["base_url"] =
+default['airflow']["config"]["webserver"]["web_server_host"] = '0.0.0.0'
+default['airflow']["config"]["webserver"]["expose_config"] = true
+default['airflow']["config"]["webserver"]["filter_by_owner"] = true
+default['airflow']["config"]["webserver"]["authenticate"] = false
+default['airflow']["config"]["webserver"]["workers"]  = 4
+# authentication mechanism
+# default['airflow']["config"]["webserver"]["auth_backend"] = "airflow.contrib.auth.backends.password_auth"
+
+#
+# Scheduler --------------------------------------------------------------
+#
+
+default['airflow']["config"]["scheduler"]["job_heartbeat_sec"]  = 5
+# No of multiple threads in parallel to schedule dags.
+default['airflow']["config"]["scheduler"]["max_threads"]  = 2
+# Parse and schedule each file no faster than this interval.
+default['airflow']["config"]["scheduler"]["min_file_process_interval"]  = 10
+# How often in seconds to scan the DAGs directory for new files.
+default['airflow']["config"]["scheduler"]["dag_dir_list_interval"] = 40
+# How many seconds do we wait for tasks to heartbeat before mark them as zombies.
+default['airflow']["config"]["scheduler"]["scheduler_zombie_task_threshold"] = 300
+# How often should stats be printed to the logs
+default['airflow']["config"]["scheduler"]["print_stats_interval"] = 600
