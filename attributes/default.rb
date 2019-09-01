@@ -20,6 +20,7 @@ default["airflow"]["group"] = "airflow"
 # default["airflow"]["user_uid"] = 9999
 # default["airflow"]["group_gid"] = 9999
 default["airflow"]["user_home_directory"] = "/home/#{node["airflow"]["user"]}"
+default["airflow"]["install_directory"] = "/opt/airflow"
 default["airflow"]["shell"] = "/bin/bash"
 
 # db config
@@ -40,8 +41,13 @@ default["airflow"]["env_path"] = node["platform_family"] == "debian" ? "/etc/def
 # Python config
 default["airflow"]["python_runtime"] = "3"
 default["airflow"]["python_version"] = "3.6"
-default["airflow"]["pip_version"] = '18.0'
+default["airflow"]["pip_version"] = '18.1'
 
+
+## Remove devel_hadoop which brings snakebite[kerberos] which does not work on Python 3
+default['airflow']["operators"] = %w(async crypto hdfs hive jdbc kerberos ldap postgres celery rabbitmq redis devel)
+# default['airflow']['packages'] = ['async', 'crypto', 'hdfs', 'hive', 'jdbc', 'kerberos',
+                                  # 'ldap', 'postgres']
 
 #
 # Core Settings --------------------------------------------------------------
@@ -81,7 +87,6 @@ default['airflow']["config"]["webserver"]["expose_config"] = true
 default['airflow']["config"]["webserver"]["authenticate"] = false
 # default is false - (requires authentication to be enabled)
 default['airflow']["config"]["webserver"]["filter_by_owner"] = false
-
 default['airflow']["config"]["webserver"]["owner_mode"] = "user"
 # authentication mechanism
 # default['airflow']["config"]["webserver"]["auth_backend"] = "airflow.contrib.auth.backends.password_auth"
@@ -90,14 +95,7 @@ default['airflow']["config"]["webserver"]["owner_mode"] = "user"
 # Scheduler --------------------------------------------------------------
 #
 
-default['airflow']["config"]["scheduler"]["job_heartbeat_sec"]  = 5
-# No of multiple threads in parallel to schedule dags.
 default['airflow']["config"]["scheduler"]["max_threads"]  = 2
-# Parse and schedule each file no faster than this interval.
-default['airflow']["config"]["scheduler"]["min_file_process_interval"]  = 10
-# How often in seconds to scan the DAGs directory for new files.
-default['airflow']["config"]["scheduler"]["dag_dir_list_interval"] = 40
-# How many seconds do we wait for tasks to heartbeat before mark them as zombies.
-default['airflow']["config"]["scheduler"]["scheduler_zombie_task_threshold"] = 300
-# How often should stats be printed to the logs
-default['airflow']["config"]["scheduler"]["print_stats_interval"] = 600
+default['airflow']["config"]["scheduler"]["authenticate"]  = false
+default['airflow']["config"]["scheduler"]["dag_dir_list_interval"] = 60
+

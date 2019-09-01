@@ -13,16 +13,16 @@
 # limitations under the License.
 
 ENV['SLUGIFY_USES_TEXT_UNIDECODE'] = 'yes'
+venv_path = ::File.join(node["airflow"]["install_directory"], "app2")
+requried_packages = node['airflow']["operators"]
+airflow_packages = node['airflow']['packages']
+airflow_user = node["airflow"]["user"]
+airflow_group = node["airflow"]["group"]
 
-python_runtime node["airflow"]["python_runtime"] do
-  version node["airflow"]["python_version"]
-  provider :system
-  pip_version node["airflow"]["pip_version"]
-  get_pip_url node["airflow"]["get_pip_url"]
-end
+
 
 # Obtain the current platform name
-platform = node['platform'].to_s
+platform = node['platform'].to_sym
 
 # Default dependencies to install
 dependencies_to_install = []
@@ -30,24 +30,19 @@ node['airflow']['dependencies'][platform][:default].each do |dependency|
   dependencies_to_install << dependency
 end
 
-# Get Airflow packages as strings
-airflow_packages = []
-node['airflow']['packages'].each do |key, _value|
-  airflow_packages << key.to_s
-end
-
 # Use the airflow package strings to add dependent packages to install.
-airflow_packages.each do |package|
+requried_packages.each do |package|
   if node['airflow']['dependencies'][platform].key?(package.to_sym)
-    node['airflow']['dependencies'][platform][package].each do |dependency|
+    node['airflow']['dependencies'][platform][package.to_sym].each do |dependency|
       dependencies_to_install << dependency
     end
   end
 end
 
-if(airflow_packages.include?('all') || airflow_packages.include?('oracle'))
+if(requried_packages.include?('all') || requried_packages.include?('oracle'))
   raise ArgumentError, "Sorry, currently all, devel and oracle airflow pip packages are not supported in this cookbook. For more info, please see the README.md file."
 end
+
 
 # Install dependencies
 dependencies_to_install.each do |value|
@@ -66,26 +61,106 @@ dependencies_to_install.each do |value|
   end
 end
 
-# Install Airflow
-python_package node['airflow']['airflow_package'] do
-  version node['airflow']['version']
+# NB. the popise-python library doesn't work with pip version higher than 18.0
+# for centos at the moment. issue https://github.com/poise/poise-python/issues/140
+python_virtualenv venv_path do
+  user airflow_user
+  group  airflow_group
+  path venv_path
+  python "/usr/bin/python3"
+  pip_version "18.0"
+  setuptools_version true
+  wheel_version false
 end
 
-# Install Airflow packages
-node['airflow']['packages'].each do |_key, value|
-  value.each do |val|
-    package_to_install = ''
-    version_to_install = ''
-    val.each do |k, v|
-      if k.to_s == 'name'
-        package_to_install = v
-      else
-        version_to_install = v
-      end
-    end
-    python_package package_to_install.to_s do
-      action :install
-      version version_to_install.to_s
-    end
+# Install the apache-airflow core package
+pip_package 'apache-airflow' do
+  package_name node["airflow"]["airflow_package"]
+  version node["airflow"]["version"]
+  user airflow_user
+  group  airflow_group
+  virtualenv venv_path
+end
+
+packages_to_install = []
+requried_packages.each do |package|
+  if airflow_packages[package.to_sym]
+    packages_to_install +=  airflow_packages[package.to_sym]
+  else
+    raise ArgumentError, "The specified operator was not found in the airflow's operators list! Operator => #{package}"
   end
 end
+
+packages_to_install.each do |package|
+  pip_package "airflow-package-#{package[:name]}" do
+    package_name package[:name]
+    version package[:version]
+    user airflow_user
+    group  airflow_group
+    virtualenv venv_path
+  end
+end
+
+# require 'chef/mixin/shell_out'
+# # passenger_root = shell_out("pip3 show pip").status == 1
+# exit_code = shell_out("pip3 show pip >/dev/null 2>&1; echo $?").stdout.to_i
+
+# log "*********output result1: #{exit_code}"
+
+# exit_code = shell_out("pip3 show pipaa >/dev/null 2>&1; echo $?").stdout.to_i
+
+# log "*********output result2: #{exit_code}"
+
+
+# pip_package "tornado" do
+#   package_name "tornado"
+#   version ">=5.2.0"
+#   user airflow_user
+#   group  airflow_group
+#   virtualenv venv_path
+# end
+
+# install packages within env
+# execute "install-packages" do
+#   user node["airflow"]["user"]
+#   cwd venv_path
+#   command " pip install apache-airflow[#{airflow_packages_list}]"
+#   notifies :run, "execute[activate-env]", :before
+#   notifies :run, "execute[deactivate-env]", :immediately
+# end
+
+# bash "install-greenlet" do
+#   user airflow_user
+#   group  airflow_group
+#   cwd venv_path
+#   code <<-EOH
+#     source bin/activate
+#     export SLUGIFY_USES_TEXT_UNIDECODE=yes
+#     pip install 'greenlet>=0.4.9'
+#     deactivate
+#   EOH
+  # command " pip install apache-airflow[#{airflow_packages_list}]"
+  # notifies :run, "execute[activate-env]", :before
+  # notifies :run, "execute[ßdeactivate-env]", :immediately
+#end
+
+# airflow_packages.each do |package|
+#   execute "install-#{package}-package" do
+#     command "pip install apache-airflow[#{package}]"
+#     only_if "pip show pip"
+
+#   end
+
+# end
+
+# execute "activate-env" do
+#   user node["airflow"]["user"]
+#   command "source #{::File.join(venv_path, "bin/activate")}"
+#   action :nothing
+# end
+
+# execute "deactivate-env" do
+#   user node["airflow"]["user"]
+#   command "deactivate"
+#   action :nothing
+# end

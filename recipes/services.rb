@@ -21,6 +21,6 @@ template "airflow_services_env" do
   mode "0644"
   variables({
     :is_upstart => node["airflow"]["is_upstart"],
-    :config => node["airflow"]["config"]
+    :airflow_home => node["airflow"]["home"]
   })
 end

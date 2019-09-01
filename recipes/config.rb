@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-template "#{node["airflow"]["config"]["core"]["airflow_home"]}/airflow.cfg" do
+template "#{node["airflow"]["home"]}/airflow.cfg" do
   source "airflow.cfg.erb"
   owner node["airflow"]["user"]
   group node["airflow"]["group"]

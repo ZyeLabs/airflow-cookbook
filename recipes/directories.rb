@@ -12,7 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-directory node["airflow"]["config"]["core"]["airflow_home"] do
+directory node["airflow"]["home"] do
+  owner node["airflow"]["user"]
+  group node["airflow"]["group"]
+  mode node["airflow"]["directories_mode"]
+  action :create
+end
+
+directory node["airflow"]["install_directory"] do
   owner node["airflow"]["user"]
   group node["airflow"]["group"]
   mode node["airflow"]["directories_mode"]
@@ -33,9 +40,17 @@ directory node["airflow"]["config"]["core"]["plugins_folder"] do
   action :create
 end
 
+directory node["airflow"]["config"]["core"]["base_log_folder"] do
+  owner node["airflow"]["user"]
+  group node["airflow"]["group"]
+  mode node["airflow"]["directories_mode"]
+  action :create
+end
+
 directory node["airflow"]["run_path"] do
   owner node["airflow"]["user"]
   group node["airflow"]["group"]
   mode node["airflow"]["directories_mode"]
   action :create
 end
+

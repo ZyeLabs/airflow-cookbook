@@ -21,10 +21,9 @@ long_description 'Installs and configures Airflow workflow management platform. 
 source_url       'https://github.com/bahchis/airflow-cookbook'
 issues_url       'https://github.com/bahchis/airflow-cookbook/issues'
 
-version          '1.2.4'
+version          '1.0.0'
 supports         'ubuntu', '>= 14.04'
 supports         'centos', '>= 7.0'
 chef_version     '>12'
 
-depends 'apt'
 depends 'poise-python'
