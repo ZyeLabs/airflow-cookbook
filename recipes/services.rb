@@ -20,7 +20,19 @@ template "airflow_services_env" do
   group "root"
   mode "0644"
   variables({
-    :is_upstart => node["airflow"]["is_upstart"],
-    :airflow_home => node["airflow"]["home"]
+    :airflow_home => node["airflow"]["home"],
+    :scheduler_duration => node["airflow"]["scheduler_duration"],
+    :scheduler_runs => node["airflow"]["scheduler_runs"],
+  })
+end
+
+template "#{node['airflow']['home']}/airflow_runner.sh" do
+  source "airflow_runner.sh.erb"
+  owner node['airflow']['user']
+  group node['airflow']['group']
+  mode "0740"
+  variables({
+    :app_dir => node["airflow"]["install_path"],
+    :bin_dir => node["airflow"]["bin_path"]
   })
 end

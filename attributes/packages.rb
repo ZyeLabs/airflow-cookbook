@@ -88,6 +88,7 @@ default['airflow']['packages'] =
     ldap: [{ name: 'ldap3', version: '>=2.5.1' }],
     mssql: [{ name: 'pymssql', version: '>=2.1.1' }],
     mysql: [{ name: 'mysqlclient', version: '>=1.3.6,<1.4' }],
+    oracle: [{ name: 'cx_Oracle', version: '>=5.1.2' }],
     password: [{ name: 'bcrypt', version: '>=2.0.0' },
                { name: 'flask-bcrypt', version: '>=0.7.1' }],
     pinot: [{ name: 'pinotdb', version: '==0.1.1' }],
@@ -192,9 +193,12 @@ default['airflow']['dependencies'] =
       devel_hadoop: [{ name: 'cyrus-sasl-devel', version: '' }],
       webhdfs: [{ name: 'cyrus-sasl-devel', version: '' }],
       kerberos: [{ name: 'cyrus-sasl-devel', version: '' },
-                 { name: 'krb5-devel', version: '' }]
+                { name: 'cyrus-sasl-gssapi', version: '' },
+                { name: 'krb5-devel', version: '' }]
     }
   }
+ # cyrus-sasl-gssapi was added as a requirement for connecting to kerberized service such as hive metastore using GSSAPI auth protocol.
+
 
 if node["airflow"]["python_runtime"].to_i == 3
   default['airflow']['dependencies'][:ubuntu][:default] << { name: "python#{node["airflow"]["python_version"]}-dev", version: '' }

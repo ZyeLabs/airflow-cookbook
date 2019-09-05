@@ -19,7 +19,7 @@ directory node["airflow"]["home"] do
   action :create
 end
 
-directory node["airflow"]["install_directory"] do
+directory node["airflow"]["install_path"] do
   owner node["airflow"]["user"]
   group node["airflow"]["group"]
   mode node["airflow"]["directories_mode"]

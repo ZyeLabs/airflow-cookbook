@@ -27,3 +27,6 @@ supports         'centos', '>= 7.0'
 chef_version     '>12'
 
 depends 'poise-python'
+depends 'postgres-cluster'
+depends 'kerberos-kdc'
+depends 'ssh'

@@ -12,6 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-<% if @is_upstart -%>
-<%= "export " -%>
-<% end -%>AIRFLOW_HOME="<%= @airflow_home %>"
+AIRFLOW_HOME="<%= @airflow_home %>"
+SCHEDULER_DURATION="<%= @scheduler_duration %>"
+SCHEDULER_RUNS="<%= @scheduler_runs %>"

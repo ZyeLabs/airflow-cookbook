@@ -1,0 +1,11 @@
+#!/bin/bash
+
+## Helper script used by airflow systemd units
+
+# Activate virtual environment
+source <%= @app_dir %>/bin/activate airflow
+
+# export PATH=$PATH:$SQOOP_HOME/bin
+
+# Run airflow with the supplied arguments
+<%= @bin_dir %>/airflow $@

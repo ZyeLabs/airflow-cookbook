@@ -13,5 +13,7 @@
 # limitations under the License.
 
 source "https://supermarket.chef.io"
+cookbook 'postgres-cluster', path: '../postgres-cluster'
+cookbook 'kerberos-kdc', path: '../kerberos-kdc'
 
 metadata

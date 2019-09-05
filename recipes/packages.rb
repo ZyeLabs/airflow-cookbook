@@ -13,7 +13,7 @@
 # limitations under the License.
 
 ENV['SLUGIFY_USES_TEXT_UNIDECODE'] = 'yes'
-venv_path = ::File.join(node["airflow"]["install_directory"], "app2")
+venv_path = node["airflow"]["install_path"]
 requried_packages = node['airflow']["operators"]
 airflow_packages = node['airflow']['packages']
 airflow_user = node["airflow"]["user"]
@@ -39,8 +39,8 @@ requried_packages.each do |package|
   end
 end
 
-if(requried_packages.include?('all') || requried_packages.include?('oracle'))
-  raise ArgumentError, "Sorry, currently all, devel and oracle airflow pip packages are not supported in this cookbook. For more info, please see the README.md file."
+if(requried_packages.include?('all'))
+  raise ArgumentError, "Sorry, currently all and devel airflow pip packages are not supported in this cookbook. For more info, please see the README.md file."
 end
 
 

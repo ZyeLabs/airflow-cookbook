@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-if (node["airflow"]["init_system"] == "upstart") 
+if (node["airflow"]["init_system"] == "upstart")
   service_target = "/etc/init/airflow-worker.conf"
   service_template = "init_system/upstart/airflow-worker.conf.erb"
 elsif (node["airflow"]["init_system"] == "systemd" && node["platform"] == "ubuntu" )
@@ -29,11 +29,12 @@ template service_target do
   group "root"
   mode "0644"
   variables({
-    :user => node["airflow"]["user"], 
+    :user => node["airflow"]["user"],
     :group => node["airflow"]["group"],
     :run_path => node["airflow"]["run_path"],
     :bin_path => node["airflow"]["bin_path"],
     :env_path => node["airflow"]["env_path"],
+    :home_path => node["airflow"]["home"],
   })
 end
 

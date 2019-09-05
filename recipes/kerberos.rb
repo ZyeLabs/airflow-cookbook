@@ -12,7 +12,34 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-if (node["airflow"]["init_system"] == "upstart") 
+airflow_user = node["airflow"]["user"]
+keytab_dir = node['kerberos']['kdc']['keytab_dir']
+airflow_principal = [airflow_user,node['fqdn']].join("/")
+keytab_filename = "#{airflow_user}.service.keytab"
+airflow_keytab = ::File.join(keytab_dir,keytab_filename)
+
+node.default['airflow']["config"]["kerberos"]["principal"] = airflow_principal
+node.default['airflow']["config"]["kerberos"]["keytab"] = airflow_keytab
+
+krb_principal airflow_user do
+  principal_name airflow_principal
+  random_key true
+  expiry "never"
+  notifies :create, "krb_keytab[#{airflow_user}]", :immediately
+end
+
+# generate a keytab
+krb_keytab airflow_user do
+  principal_name airflow_principal
+  filename keytab_filename
+  owner airflow_user
+  group "hadoop"
+  override true
+  action :nothing
+end
+
+
+if (node["airflow"]["init_system"] == "upstart")
   service_target = "/etc/init/airflow-kerberos.conf"
   service_template = "init_system/upstart/airflow-kerberos.conf.erb"
 elsif (node["airflow"]["init_system"] == "systemd" && node["platform"] == "ubuntu" )
@@ -29,11 +56,12 @@ template service_target do
   group "root"
   mode "0644"
   variables({
-    :user => node["airflow"]["user"], 
+    :user => node["airflow"]["user"],
     :group => node["airflow"]["group"],
     :run_path => node["airflow"]["run_path"],
     :bin_path => node["airflow"]["bin_path"],
     :env_path => node["airflow"]["env_path"],
+    :home_path => node["airflow"]["home"],
   })
 end
 
