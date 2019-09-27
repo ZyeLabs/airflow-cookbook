@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-helper = PostgresCluster::Helper.new(node)
+# helper = PostgresCluster::Helper.new(node)
 
 default_db_pass = node['airflow']['database']['password']
 db_pass = ChefVault::Item.load(:credentials, 'pg-airflow')['password'] rescue default_db_pass
