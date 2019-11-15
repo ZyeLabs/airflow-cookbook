@@ -38,4 +38,14 @@ template "#{node["airflow"]["home"]}/airflow.cfg" do
       }
     end
   )
+  notifies :restart, 'service[airflow-scheduler]', :delayed
+  notifies :restart, 'service[airflow-webserver]', :delayed
+end
+
+service "airflow-webserver" do
+  action :nothing
+end
+
+service "airflow-scheduler" do
+  action :nothing
 end

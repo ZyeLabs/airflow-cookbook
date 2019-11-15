@@ -3,7 +3,7 @@
 # ------------------------------------------------------------------------
 # ------------------------------------------------------------------------
 #
-# NB. This config file is managed by Chef! Don't modify the file manually!!
+# NB. This config file is managed by Chef! Don't modify the file manually!
 #
 # ------------------------------------------------------------------------
 # ------------------------------------------------------------------------
@@ -141,7 +141,7 @@ task_runner = StandardTaskRunner
 
 # If set, tasks without a `run_as_user` argument will be run with this user
 # Can be used to de-elevate a sudo user running Airflow when executing tasks
-default_impersonation = hadoopetl
+# default_impersonation = hadoopetl
 
 # What security module to use (for example kerberos):
 security = <%= @config['core']['security'] %>
@@ -175,7 +175,6 @@ worker_precheck = False
 
 # When discovering DAGs, ignore any files that don't contain the strings `DAG` and `airflow`.
 dag_discovery_safe_mode = True
-
 
 [cli]
 # In what way should the cli access the API. The LocalClient will use the
