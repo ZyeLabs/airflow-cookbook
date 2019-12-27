@@ -60,7 +60,7 @@ default['airflow']['database']['schema'] = 'airflow'
 default['airflow']['database']['password'] = 'airflow'
 
 
-default['airflow']["operators"] = %w(async crypto hdfs hive jdbc kerberos ldap postgres oracle)
+default['airflow']["operators"] = %w(async crypto hdfs hive jdbc kerberos ldap postgres oracle webhdfs)
 
 
 #
@@ -78,7 +78,8 @@ default["airflow"]["config"]["core"]["sql_alchemy_conn"] = "postgresql+psycopg2:
 
 default["airflow"]["config"]["core"]["sql_alchemy_conn"] = "sqlite:///#{node["airflow"]["home"]}/airflow.db"
 default["airflow"]["config"]["core"]["sql_alchemy_schema"] = "public"
-default['airflow']["config"]["core"]["parallelism"] = 32
+default['airflow']["config"]["core"]["parallelism"] = 16
+# max number of tasks that can be running per DAG (across multiple DAG runs) concurrently
 default['airflow']["config"]["core"]["dag_concurrency"] = 16
 default['airflow']["config"]["core"]["dags_are_paused_at_creation"] = true
 default['airflow']['config']['core']['load_examples'] = false
@@ -86,7 +87,9 @@ default["airflow"]["config"]["core"]["plugins_folder"] = "#{node["airflow"]["hom
 default["airflow"]["config"]["core"]["fernet_key"] = "QcPpFrJdc1glC79ZXwJKvf0jXz9psu83EMP2GXCBf9I="
 default['airflow']["config"]["core"]["dagbag_import_timeout"] = 60
 default['airflow']["config"]["core"]["non_pooled_task_slot_count"] = 128
-default['airflow']["config"]["core"]["max_active_runs_per_dag"] = 16
+# Default value for concurrent dagruns (running instances of the dag) is 16.
+# To avoid unexpected behavour setting it to 1. it can be set at dag level using max_active_runs param
+default['airflow']["config"]["core"]["max_active_runs_per_dag"] = 1
 default['airflow']["config"]["core"]["security"] ='kerberos' # for non-kerberos mode set it to empty string ''
 default['airflow']["config"]["core"]["secure_mode"] = false
 
@@ -111,9 +114,10 @@ default['airflow']["config"]["webserver"]["auth_backend"] = "airflow.contrib.aut
 # Scheduler --------------------------------------------------------------
 #
 
-default['airflow']["config"]["scheduler"]["max_threads"] = 2
+default['airflow']["config"]["scheduler"]["max_threads"] = 12
 default['airflow']["config"]["scheduler"]["authenticate"] = false
-default['airflow']["config"]["scheduler"]["dag_dir_list_interval"] = 60
+default['airflow']["config"]["scheduler"]["min_file_process_interval"] = 60
+default['airflow']["config"]["scheduler"]["dag_dir_list_interval"] = 300
 
 #
 # Kerberos --------------------------------------------------------------

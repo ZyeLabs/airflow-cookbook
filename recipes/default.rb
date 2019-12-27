@@ -14,6 +14,7 @@
 
 # include_recipe "airflow::user"
 include_recipe "airflow::directories"
+include_recipe "airflow::plugins"
 # include_recipe "airflow::packages"
 include_recipe "airflow::config"
 include_recipe "airflow::services"

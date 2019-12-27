@@ -112,7 +112,9 @@ default['airflow']['packages'] =
     statsd: [{ name: 'statsd', version: '>=3.0.1, <4.0' }],
     vertica: [{ name: 'vertica-python', version: '>=0.5.1' }],
     virtualenv: [{ name: 'virtualenv', version: '' }],
-    webhdfs: [{ name: 'hdfs[dataframe,avro,kerberos]', version: '>=2.0.4' }],
+    #removed version condition from webhdfs, since it throws error in subsequent chef-runs after installation
+    # ArgumentError: Malformed version number string >=2.0.4
+    webhdfs: [{ name: 'hdfs[dataframe,avro,kerberos]', version: '' }],
     winrm: [{ name: 'pywinrm', version: '==0.2.2' }],
     zendesk: [{ name: 'zdesk', version: '' }],
     devel: [

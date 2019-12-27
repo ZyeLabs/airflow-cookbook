@@ -79,7 +79,8 @@ sql_alchemy_pool_enabled = True
 
 # The SqlAlchemy pool size is the maximum number of database connections
 # in the pool. 0 indicates no limit.
-sql_alchemy_pool_size = 5
+# (default was 5)
+sql_alchemy_pool_size = 20
 
 # The maximum overflow size of the pool.
 # When the number of checked-out connections reaches the size set in pool_size,
@@ -254,7 +255,7 @@ workers = <%= @config['webserver']['workers'] %>
 
 # The worker class gunicorn should use. Choices include
 # sync (default), eventlet, gevent
-worker_class = sync
+worker_class = gevent
 
 # Log files for the gunicorn webserver. '-' means log to stderr.
 access_logfile = -
@@ -470,7 +471,7 @@ scheduler_heartbeat_sec = 5
 run_duration = -1
 
 # after how much time (seconds) a new DAGs should be picked up from the filesystem
-min_file_process_interval = 0
+min_file_process_interval = <%= @config['scheduler']['min_file_process_interval'] %>
 
 # How often (in seconds) to scan the DAGs directory for new files. Default to 5 minutes.
 dag_dir_list_interval = <%= @config['scheduler']['dag_dir_list_interval'] %>
@@ -496,7 +497,8 @@ scheduler_zombie_task_threshold = 300
 # will not do scheduler catchup if this is False,
 # however it can be set on a per DAG basis in the
 # DAG definition (catchup)
-catchup_by_default = True
+# turn off cachup by default (default is True)
+catchup_by_default = False
 
 # This changes the batch size of queries in the scheduling main loop.
 # If this is too high, SQL query performance may be impacted by one
