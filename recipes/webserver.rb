@@ -32,12 +32,11 @@ template service_target do
     :user => node["airflow"]["user"],
     :group => node["airflow"]["group"],
     :run_path => node["airflow"]["run_path"],
-    :bin_path => node["airflow"]["bin_path"],
     :env_path => node["airflow"]["env_path"],
-    :home_path => node["airflow"]["home"],
+    :home_path => node["airflow"]["home_current"],
   })
 end
 
 service "airflow-webserver" do
-  action [:enable]
+  action [ :enable, :start ]
 end

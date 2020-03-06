@@ -12,12 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# include_recipe "airflow::user"
+include_recipe "airflow::user"
 include_recipe "airflow::directories"
+include_recipe "airflow::packages"
 include_recipe "airflow::plugins"
-# include_recipe "airflow::packages"
 include_recipe "airflow::config"
 include_recipe "airflow::services"
-include_recipe "airflow::webserver"
-include_recipe "airflow::scheduler"
-include_recipe "airflow::kerberos"
+include_recipe "airflow::account"

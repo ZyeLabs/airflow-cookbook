@@ -12,6 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
+directory node["airflow"]["install_path"]  do
+  owner node["airflow"]["user"]
+  group node["airflow"]["group"]
+  mode node["airflow"]["directories_mode"]
+  recursive true
+  action :create
+end
+
+directory node["airflow"]["home_root"] do
+  owner node["airflow"]["user"]
+  group node["airflow"]["group"]
+  mode node["airflow"]["directories_mode"]
+  action :create
+end
+
 directory node["airflow"]["home"] do
   owner node["airflow"]["user"]
   group node["airflow"]["group"]
@@ -19,10 +35,10 @@ directory node["airflow"]["home"] do
   action :create
 end
 
-directory node["airflow"]["install_path"] do
+directory "airflow-chef" do
+  path ::File.join(node["airflow"]["install_path"], "chef")
   owner node["airflow"]["user"]
-  group node["airflow"]["group"]
-  mode node["airflow"]["directories_mode"]
+  group "root"
   action :create
 end
 
@@ -53,4 +69,19 @@ directory node["airflow"]["run_path"] do
   mode node["airflow"]["directories_mode"]
   action :create
 end
+
+directory "~/.pip" do
+  path ::File.join(node["airflow"]["user_home_directory"], ".pip")
+  owner node["airflow"]["user"]
+  group node["airflow"]["group"]
+  mode node["airflow"]["directories_mode"]
+  action :create
+end
+
+link "dags" do
+  target_file ::File.join(node["airflow"]["home"], "dags")
+  to node["airflow"]["config"]["core"]["dags_folder"]
+end
+
+
 

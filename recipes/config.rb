@@ -27,7 +27,7 @@ node.default["airflow"]["config"]["core"]["sql_alchemy_conn"] = "#{db_engine}://
 node.default["airflow"]["config"]["ldap"]["bind_password"] = ldap_bind_pass
 
 template "#{node["airflow"]["home"]}/airflow.cfg" do
-  source "airflow.cfg.erb"
+  source "airflow-#{node["airflow"]["version"]}.cfg.erb"
   owner node["airflow"]["user"]
   group node["airflow"]["group"]
   mode node["airflow"]["config_file_mode"]
@@ -42,10 +42,70 @@ template "#{node["airflow"]["home"]}/airflow.cfg" do
   notifies :restart, 'service[airflow-webserver]', :delayed
 end
 
+execute "init-db" do
+  cwd node["airflow"]["venv_path"]
+  user node["airflow"]["user"]
+  command "AIRFLOW_HOME=#{node["airflow"]["home"]} bin/airflow initdb"
+  live_stream true
+  creates ::File.join(node["airflow"]["install_path"], "chef", ".db-configured")
+  notifies :create, "file[db-configured]", :immediately
+end
+
+execute "upgrade-db" do
+  cwd node["airflow"]["venv_path"]
+  user node["airflow"]["user"]
+  command "AIRFLOW_HOME=#{node["airflow"]["home"]} bin/airflow upgradedb"
+  live_stream true
+  creates ::File.join(node["airflow"]["install_path"], "chef", ".db-upgraded")
+  notifies :create, "file[db-upgraded]", :immediately
+end
+
+file "db-configured" do
+  path ::File.join(node["airflow"]["install_path"], "chef", ".db-configured")
+  content ''
+  mode '644'
+  owner 'root'
+  group 'root'
+  action :nothing
+end
+
+file "db-upgraded" do
+  path ::File.join(node["airflow"]["install_path"], "chef", ".db-upgraded")
+  content ''
+  mode '644'
+  owner 'root'
+  group 'root'
+  action :nothing
+end
+
+link "current-home" do
+  target_file node["airflow"]["home_current"]
+  to node["airflow"]["home"]
+  owner node['airflow']['user']
+  group node['airflow']['group']
+  only_if { ::File.exists?(::File.join(node["airflow"]["install_path"], "chef", ".build-done")) and
+            ::File.exists?(::File.join(node["airflow"]["install_path"], "chef", ".db-configured")) and
+            ::File.exists?(::File.join(node["airflow"]["install_path"], "chef", ".db-upgraded")) }
+end
+
+template "airflow_runner.sh" do
+  path ::File.join(node["airflow"]["home"], "airflow_runner.sh")
+  source "airflow_runner.sh.erb"
+  owner node['airflow']['user']
+  group node['airflow']['group']
+  mode "0740"
+  variables({
+    :app_dir => node["airflow"]["venv_path"],
+    :bin_dir => node["airflow"]["bin_path"]
+  })
+end
+
 service "airflow-webserver" do
   action :nothing
+  only_if "systemctl list-units --full -all | grep -Fq 'airflow-webserver.service'"
 end
 
 service "airflow-scheduler" do
   action :nothing
+  only_if "systemctl list-units --full -all | grep -Fq 'airflow-scheduler.service'"
 end

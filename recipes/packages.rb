@@ -13,7 +13,7 @@
 # limitations under the License.
 
 ENV['SLUGIFY_USES_TEXT_UNIDECODE'] = 'yes'
-venv_path = node["airflow"]["install_path"]
+venv_path = node['airflow']["venv_path"]
 requried_packages = node['airflow']["operators"]
 airflow_packages = node['airflow']['packages']
 airflow_user = node["airflow"]["user"]
@@ -61,7 +61,7 @@ dependencies_to_install.each do |value|
   end
 end
 
-# NB. the popise-python library doesn't work with pip version higher than 18.0
+# NB. the poise-python library doesn't work with pip version higher than 18.0
 # for centos at the moment. issue https://github.com/poise/poise-python/issues/140
 python_virtualenv venv_path do
   user airflow_user
@@ -99,4 +99,21 @@ packages_to_install.each do |package|
     group  airflow_group
     virtualenv venv_path
   end
+end
+
+file "build-done" do
+  path ::File.join(node["airflow"]["install_path"], "chef", ".build-done")
+  content ''
+  mode '644'
+  owner 'root'
+  group 'root'
+  action :create
+end
+
+link "current-app" do
+  target_file node["airflow"]["install_path_current"]
+  to node["airflow"]["install_path"]
+  user airflow_user
+  group  airflow_group
+  only_if { ::File.exists?(::File.join(node["airflow"]["install_path"], "chef", ".build-done")) }
 end

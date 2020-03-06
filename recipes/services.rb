@@ -12,27 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-template "airflow_services_env" do
+template "airflow_env" do
   source "init_system/airflow-env.erb"
   path node["airflow"]["env_path"]
   owner "root"
   group "root"
   mode "0644"
   variables({
-    :airflow_home => node["airflow"]["home"],
+    :airflow_home => node["airflow"]["home_current"],
     :scheduler_duration => node["airflow"]["scheduler_duration"],
     :scheduler_runs => node["airflow"]["scheduler_runs"],
-  })
-end
-
-template "#{node['airflow']['home']}/airflow_runner.sh" do
-  source "airflow_runner.sh.erb"
-  owner node['airflow']['user']
-  group node['airflow']['group']
-  mode "0740"
-  variables({
-    :app_dir => node["airflow"]["install_path"],
-    :bin_dir => node["airflow"]["bin_path"]
   })
 end

@@ -12,15 +12,36 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-group node["airflow"]["group"] do
+# group node["airflow"]["group"] do
+#   action :create
+# end
+
+node["airflow"]["groups"].each do |group|
+  group group do
+    append true
+  end
+end
+
+user_account node["airflow"]["user"] do
+  comment "Airflow user"
+  gid node["airflow"]["group"]
+  ssh_keygen false
+  groups node["airflow"]["groups"]
+  home node["airflow"]["user_home_directory"]
+  shell node["airflow"]["shell"]
   action :create
 end
 
-user node["airflow"]["user"] do
-  comment "Airflow user"
-  gid node['airflow']['group']
-  home node["airflow"]["user_home_directory"]
-  manage_home true
-  shell node["airflow"]["shell"]
-end
+# user node["airflow"]["user"] do
+#   comment "Airflow user"
+#   gid node['airflow']['group']
+#   home node["airflow"]["user_home_directory"]
+#   manage_home true
+#   shell node["airflow"]["shell"]
+# end
+
+
+
+
+
 

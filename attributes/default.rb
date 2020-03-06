@@ -17,24 +17,30 @@ default["airflow"]["airflow_package"] = 'apache-airflow' # use 'airflow' for ver
 default["airflow"]["version"] = "1.10.4"
 default["airflow"]["user"] = "airflow"
 default["airflow"]["group"] = "airflow"
+default["airflow"]["groups"] = ['hadoop', 'airflow']
 # default["airflow"]["user_uid"] = 9999
 # default["airflow"]["group_gid"] = 9999
 default["airflow"]["user_home_directory"] = "/home/#{node["airflow"]["user"]}"
 default["airflow"]["shell"] = "/bin/bash"
-default['airflow']['authorized_keys'] = [{ name: "airflow@lxdphdpe01.cellc.net",
-                                           key:"AAAAB3NzaC1yc2EAAAADAQABAAABAQCxw2Wfj5et3gXWH3l12/XJIu3u/Uh9Jq7TcUksKqcZhSVkZGWANzDNPTXa+1ok4Li6OJe+W++jUtdk4etB6emrFj1wccEoKCrGJkKUHg2dzEi28bKlhHfFdz2E5qjG5LBTuY9ZHW7BPqzLsWQByWMFETrHpLZEqdeOPMU7gmxq39n3UauFZBZOx7nWZqex6s+a5ADmurAVahm8vygMl6U7PQNSeVgFfp9bbjbpfhm/IEgy6i8cZ7NLqmw2J0JKv1G4U3dIax8pZ5z4sZ/feYrchmctZ8Kyp8RaKDa9mRl0HiqsA4nn1g4LE3nOgKstoJ31v8qYkmbc9JCN50eULuZv" }]
+default['airflow']['authorized_keys'] = []
 
 # db config
 default['airflow']['postgres']['user']      = "airflow"
 default['airflow']['postgres']['passowrd']  = "airflow"
 
 # General config
-default["airflow"]["home"] = "/var/lib/airflow"
-default["airflow"]["install_path"] = "/opt/airflow"
+default["airflow"]["install_path_root"] = "/opt/airflow"
+default["airflow"]["install_path_current"]  = "/opt/airflow/current"
+default["airflow"]["install_path"] = "#{node["airflow"]["install_path_root"]}/airflow-#{node["airflow"]["version"]}"
+default["airflow"]["venv_path"] = "#{node["airflow"]["install_path"]}/venv"
+default["airflow"]["home_root"] = "/var/lib/airflow"
+default["airflow"]["home_current"] = "/var/lib/airflow/current"
+default["airflow"]["home"] = "#{node["airflow"]["home_root"]}/airflow-#{node["airflow"]["version"]}"
+
 default["airflow"]["directories_mode"] = "0775"
 default["airflow"]["config_file_mode"] = "0644"
 # default["airflow"]["bin_path"] = node["platform"] == "ubuntu" ? "/usr/local/bin" : "/usr/bin"
-default["airflow"]["bin_path"] = "#{node["airflow"]["install_path"]}/bin"
+default["airflow"]["bin_path"] = "#{node["airflow"]["venv_path"]}/bin"
 
 default["airflow"]["run_path"] = "/var/run/airflow"
 default["airflow"]["is_upstart"] = node["platform"] == "ubuntu" && node["platform_version"].to_f < 15.04
@@ -67,11 +73,11 @@ default['airflow']["operators"] = %w(async crypto hdfs hive jdbc kerberos ldap p
 # Core Settings --------------------------------------------------------------
 #
 
-default["airflow"]["config"]["core"]["dags_folder"] = "#{node["airflow"]["home"]}/dags"
+default["airflow"]["config"]["core"]["dags_folder"] = "#{node["airflow"]["home_root"]}/dags"
 default['airflow']["config"]["core"]["base_log_folder"]  = "#{node["airflow"]["home"]}/logs"
 default['airflow']["config"]["core"]["dag_processor_manager_log_location"]  = "#{node["airflow"]["home"]}/logs/dag_processor_manager/dag_processor_manager.log"
 
-default['airflow']['config']['core']['default_timezone'] = "system"
+default['airflow']['config']['core']['default_timezone'] = "Africa/Johannesburg"
 # possible values: SequentialExecutor, LocalExecutor, CeleryExecutor
 default['airflow']["config"]["core"]["executor"] = "LocalExecutor"
 default["airflow"]["config"]["core"]["sql_alchemy_conn"] = "postgresql+psycopg2://airflow:airflow@localhost:5432/airflow"
@@ -99,8 +105,8 @@ default['airflow']["config"]["core"]["secure_mode"] = false
 #
 
 default['airflow']["config"]["webserver"]["base_url"] = "http://localhost:8888"
-default['airflow']["config"]["webserver"]["web_server_host"] = '0.0.0.0'
-default['airflow']["config"]["webserver"]["web_server_port"] = 8888
+default['airflow']["config"]["webserver"]["host"] = '0.0.0.0'
+default['airflow']["config"]["webserver"]["port"] = 8888
 default['airflow']["config"]["webserver"]["workers"]  = 4
 default['airflow']["config"]["webserver"]["expose_config"] = true
 default['airflow']["config"]["webserver"]["authenticate"] = true

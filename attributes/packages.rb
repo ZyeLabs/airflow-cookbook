@@ -203,6 +203,10 @@ default['airflow']['dependencies'] =
 
 
 if node["airflow"]["python_runtime"].to_i == 3
+  default['airflow']['dependencies'][:ubuntu][:default].delete_if { |item| item[:name] == "python-dev" }
   default['airflow']['dependencies'][:ubuntu][:default] << { name: "python#{node["airflow"]["python_version"]}-dev", version: '' }
-  default['airflow']['dependencies'][:centos][:default] << { name: "python#{node["airflow"]["python_version"].gsub('.','')}-devel", version: '' }
+
+  default['airflow']['dependencies'][:centos][:default].delete_if { |item| item[:name] == "python-devel" }
+  default['airflow']['dependencies'][:centos][:default] << { name: "python3", version: '' }
+  default['airflow']['dependencies'][:centos][:default] << { name: "python3-devel", version: '' }
 end
