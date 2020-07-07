@@ -83,5 +83,10 @@ link "dags" do
   to node["airflow"]["config"]["core"]["dags_folder"]
 end
 
+link "logs" do
+  target_file ::File.join(node["airflow"]["home"], "logs")
+  to node["airflow"]["config"]["core"]["base_log_folder"]
+end
+
 
 

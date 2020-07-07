@@ -66,7 +66,7 @@ default['airflow']['database']['schema'] = 'airflow'
 default['airflow']['database']['password'] = 'airflow'
 
 
-default['airflow']["operators"] = %w(async crypto hdfs hive jdbc kerberos ldap postgres oracle webhdfs)
+default['airflow']["operators"] = %w(async crypto hdfs hive jdbc kerberos ldap postgres oracle webhdfs custom ssh)
 
 
 #
@@ -74,8 +74,8 @@ default['airflow']["operators"] = %w(async crypto hdfs hive jdbc kerberos ldap p
 #
 
 default["airflow"]["config"]["core"]["dags_folder"] = "#{node["airflow"]["home_root"]}/dags"
-default['airflow']["config"]["core"]["base_log_folder"]  = "#{node["airflow"]["home"]}/logs"
-default['airflow']["config"]["core"]["dag_processor_manager_log_location"]  = "#{node["airflow"]["home"]}/logs/dag_processor_manager/dag_processor_manager.log"
+default['airflow']["config"]["core"]["base_log_folder"]  = "#{node["airflow"]["home_root"]}/logs"
+default['airflow']["config"]["core"]["dag_processor_manager_log_location"]  = "#{node["airflow"]["home_root"]}/logs/dag_processor_manager/dag_processor_manager.log"
 
 default['airflow']['config']['core']['default_timezone'] = "Africa/Johannesburg"
 # possible values: SequentialExecutor, LocalExecutor, CeleryExecutor

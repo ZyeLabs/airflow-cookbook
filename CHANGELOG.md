@@ -27,3 +27,12 @@
 ## 1.0.0
 
 - Initial release of airflow-cookbook
+
+## 1.0.4
+
+- add custom section in the packages list for our own required python packages
+- make logs folder sharable between versions at the home_root dir
+
+## 1.0.5
+
+- include ssh sub-packages in the required packages to be installed

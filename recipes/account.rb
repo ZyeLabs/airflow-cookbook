@@ -38,7 +38,7 @@ end
 
 # activate command auto-complete
 execute "airflow-argcomplete" do
-  command "echo 'register-python-argcomplete airflow' >> #{node["airflow"]["user_home_directory"]}/.bashrc"
-  not_if "grep -q -i -e 'register-python-argcomplete airflow' #{node["airflow"]["user_home_directory"]}/.bashrc"
+  command "echo 'eval \"$(register-python-argcomplete airflow)\"' >> #{node["airflow"]["user_home_directory"]}/.bashrc"
+  not_if "grep -q -i -e 'register-python-argcomplete' #{node["airflow"]["user_home_directory"]}/.bashrc"
 end
 

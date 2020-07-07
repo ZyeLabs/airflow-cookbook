@@ -35,7 +35,7 @@ Please follow instructions in the [contributing doc](CONTRIBUTING.md).
 - worker - Configures service for worker.
 - flower - Configures service for flower.
 - kerberos - Configures service for kerberos.
-- packages - Installs Airflow and supporting packages. 
+- packages - Installs Airflow and supporting packages.
 
 ## Attributes
 ##### User config
@@ -58,13 +58,13 @@ Please follow instructions in the [contributing doc](CONTRIBUTING.md).
 - ["airflow"]["env_path"] - The path to services env file, determined automatiaclly.
 
 ##### Python config
-- ["airflow"]["python_runtime"] = Python runtime as used by [poise-python cookbook](https://github.com/poise/poise-python#quick-start). 
+- ["airflow"]["python_runtime"] = Python runtime as used by [poise-python cookbook](https://github.com/poise/poise-python#quick-start).
 - ["airflow"]["python_version"] = Python version to install as used by poise-python cookbook.
 - ["airflow"]["pip_version"] = Pip version to install (true - installs latest) as used by poise-python cookbook.
 
 ##### Package config
 - default['airflow']['packages'] - The Python packages to install for Airflow.
-- default['airflow']['dependencies'] - The dependencies of the packages listed in default['airflow']['packages']. These are OS packages, not Python packages. 
+- default['airflow']['dependencies'] - The dependencies of the packages listed in default['airflow']['packages']. These are OS packages, not Python packages.
 
 ##### airflow.cfg
 This cookbook enables to configure any airflow.cfg paramters dynamically by using attributes structure like (see the attributes file for [airflow.cfg examples](attributes/default.rb)):
@@ -75,3 +75,10 @@ Apache 2.0 (http://www.apache.org/licenses/LICENSE-2.0)
 
 ## Author
 [Sergey Bahchissaraitsev](http://www.bahchis.com/about/)
+
+## airflow versions 1.10.4 to 1.10.7
+
+following core pip packages should be reinstalled if higher version is installed during deployment
+- pip install SQLAlchemy==1.3.15
+- pip install werkzeug==0.16.1
+- pip install JPype1==0.6.3 # verion 0.7.2 and 0.7.4 broke OracleOperator and Hook

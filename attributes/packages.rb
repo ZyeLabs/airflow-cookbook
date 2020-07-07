@@ -142,7 +142,9 @@ default['airflow']['packages'] =
             { name: 'qds-sdk', version: '>=1.9.6' },
             { name: 'rednose', version: '' },
             { name: 'requests_mock', version: '' },
-            { name: 'requests_mock', version: '' }]
+            { name: 'requests_mock', version: '' }],
+    # our custom development required packages
+    custom: [{ name: 'paramiko', version: '' }]
   }
 
 if node["airflow"]["python_runtime"].to_i == 3
