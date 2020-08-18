@@ -42,3 +42,12 @@ execute "airflow-argcomplete" do
   not_if "grep -q -i -e 'register-python-argcomplete' #{node["airflow"]["user_home_directory"]}/.bashrc"
 end
 
+# set required jvm flags for connecting to secure hive via zookeeper
+execute "java-jvm-tool-ops" do
+  command "echo 'export JAVA_TOOL_OPTIONS=-Djavax.security.auth.useSubjectCredsOnly=false' >> #{node["airflow"]["user_home_directory"]}/.bashrc"
+  not_if "grep -q -i -e 'JAVA_TOOL_OPTIONS=-Djavax.security.auth.useSubjectCredsOnly=false' #{node["airflow"]["user_home_directory"]}/.bashrc"
+end
+
+
+
+

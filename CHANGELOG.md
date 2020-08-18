@@ -36,3 +36,9 @@
 ## 1.0.5
 
 - include ssh sub-packages in the required packages to be installed
+
+## 1.0.6
+
+- set JAVA_TOOL_OPTIONS env variable in .bashrc for secure hive connection
+- set JAVA_TOOL_OPTIONS env variable in airflow-env file as well
+- generate SSH key pair for the airflow user

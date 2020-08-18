@@ -25,7 +25,7 @@ end
 user_account node["airflow"]["user"] do
   comment "Airflow user"
   gid node["airflow"]["group"]
-  ssh_keygen false
+  ssh_keygen true
   groups node["airflow"]["groups"]
   home node["airflow"]["user_home_directory"]
   shell node["airflow"]["shell"]
