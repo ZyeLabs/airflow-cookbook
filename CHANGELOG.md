@@ -42,3 +42,4 @@
 - set JAVA_TOOL_OPTIONS env variable in .bashrc for secure hive connection
 - set JAVA_TOOL_OPTIONS env variable in airflow-env file as well
 - generate SSH key pair for the airflow user
+- lock community cookbook versions
