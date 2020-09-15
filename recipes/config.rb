@@ -100,6 +100,16 @@ template "airflow_runner.sh" do
   })
 end
 
+template "ulimits" do
+  path "/etc/security/limits.d/airflow.conf"
+  source 'ulimits.conf.erb'
+  mode "644"
+  variables(
+    nofile: node["airflow"]["ulimit"]["nofile"],
+    nproc: node["airflow"]["ulimit"]["nproc"]
+  )
+end
+
 service "airflow-webserver" do
   action :nothing
   only_if "systemctl list-units --full -all | grep -Fq 'airflow-webserver.service'"

@@ -68,6 +68,8 @@ default['airflow']['database']['password'] = 'airflow'
 
 default['airflow']["operators"] = %w(async crypto hdfs hive jdbc kerberos ldap postgres oracle webhdfs custom ssh)
 
+default["airflow"]["ulimit"]["nofile"] = 65536
+default["airflow"]["ulimit"]["nproc"] = 65536
 
 #
 # Core Settings --------------------------------------------------------------
