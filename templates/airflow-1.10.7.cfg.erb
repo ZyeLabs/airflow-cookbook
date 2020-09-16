@@ -323,10 +323,10 @@ hide_paused_dags_by_default = False
 page_size = 100
 
 # Use FAB-based webserver with RBAC feature
-rbac = False
+rbac = <%= @config['webserver']['rpac'] %>
 
 # Define the color of navigation bar
-navbar_color = #007A87
+navbar_color = <%= @config['webserver']['navbar_color'] %>
 
 # Default dagrun to show in UI
 default_dag_run_display_number = 25

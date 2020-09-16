@@ -43,3 +43,9 @@
 - set JAVA_TOOL_OPTIONS env variable in airflow-env file as well
 - generate SSH key pair for the airflow user
 - lock community cookbook versions
+
+## 1.0.7
+
+- Enable rbac role-based authorisation
+- Add webserver_config.py template for fab-based backend
+- Refactor ldap attributes

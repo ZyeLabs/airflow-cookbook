@@ -117,6 +117,9 @@ default['airflow']["config"]["webserver"]["filter_by_owner"] = false
 default['airflow']["config"]["webserver"]["owner_mode"] = "user"
 # authentication mechanism
 default['airflow']["config"]["webserver"]["auth_backend"] = "airflow.contrib.auth.backends.ldap_auth"
+# Wether to Use FAB-based webserver with RBAC role-based authorisation or not
+default['airflow']["config"]["webserver"]["rpac"] = true
+default['airflow']["config"]["webserver"]["navbar_color"] = '#007A87'
 
 #
 # Scheduler --------------------------------------------------------------
@@ -134,22 +137,37 @@ default['airflow']["config"]["scheduler"]["dag_dir_list_interval"] = 300
 default['airflow']["config"]["kerberos"]["principal"] = "airflow"
 default['airflow']["config"]["kerberos"]["keytab"] = "#{node["airflow"]["home"]}/airflow.keytab"
 default['airflow']["config"]["kerberos"]["ccache"] = "/tmp/airflow_krb5_ccache"
+default['airflow']["config"]["kerberos"]["keytab_dir"] = "/etc/security/keytabs"
 
 #
 # ldap --------------------------------------------------------------
 #
 
-default['airflow']["config"]["ldap"]["uri"] = "ldap://za.cellc.net:389"
-default['airflow']["config"]["ldap"]["user_filter"] = "objectclass=user"
-default['airflow']["config"]["ldap"]["user_name_attr"] = "sAMAccountName"
-default['airflow']["config"]["ldap"]["group_member_attr"] = "memberOf"
+default['airflow']["config"]["ldap"]["uri"] = node["ldap"]["primary"]["url"]
+default['airflow']["config"]["ldap"]["user_filter"] = "memberOf=CN=hadoop_dev,OU=Security Groups,OU=Groups,DC=ZA,DC=CellC,DC=net"
+default['airflow']["config"]["ldap"]["user_name_attr"] = node["ldap"]["attributes"]["user_attribute"]
+default['airflow']["config"]["ldap"]["group_member_attr"] = node["ldap"]["attributes"]["memberof_attribute"]
 default['airflow']["config"]["ldap"]["superuser_filter"] = "memberOf=CN=hadoop_dev,OU=Security Groups,OU=Groups,DC=ZA,DC=CellC,DC=net"
 default['airflow']["config"]["ldap"]["data_profiler_filter"] = "memberOf=CN=hadoop_dev,OU=Security Groups,OU=Groups,DC=ZA,DC=CellC,DC=net"
-default['airflow']["config"]["ldap"]["bind_user"] = "CN=hadoop,OU=SMC Dashboard,DC=ZA,DC=CellC,DC=net"
-default['airflow']["config"]["ldap"]["bind_password"] = "pass"
-default['airflow']["config"]["ldap"]["basedn"] = "dc=za,dc=cellc,dc=net"
+default['airflow']["config"]["ldap"]["bind_user"] = node["ldap"]["bind"]["bind_dn"]
+default['airflow']["config"]["ldap"]["bind_password"] = "pass" # set in the recipe
+default['airflow']["config"]["ldap"]["vault_pass_key"] = node["ldap"]["bind"]["vault_pass_key"]
+default['airflow']["config"]["ldap"]["basedn"] = node["ldap"]["bases"]["base"]
 # default value for search scope is LEVEL. for AD if not explicitly specifying an OU that your users are in, use SUBTREE
 default['airflow']["config"]["ldap"]["search_scope"] = "SUBTREE"
 # if not using sldap (secure) leave cacert emoty, otherwise point to the certificate file path
 default['airflow']["config"]["ldap"]["cacert"] = ""
+
+
+#
+# RABC FAB-based configs --------------------------------------------------------------
+#
+
+# Following settings are applicable in webserver_config.py file when rbac is enabled in cfg file.
+default['airflow']["config"]["fab"]["auth_type"] = "AUTH_LDAP"
+# Wehther to allow user self registration upon first login
+default['airflow']["config"]["fab"]["auth_user_registration"] = 'True'
+# The default user self registration role
+default['airflow']["config"]["fab"]["auth_user_registration_role"] = "Guest"
+
 

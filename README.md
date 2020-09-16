@@ -76,6 +76,19 @@ Apache 2.0 (http://www.apache.org/licenses/LICENSE-2.0)
 ## Author
 [Sergey Bahchissaraitsev](http://www.bahchis.com/about/)
 
+## Required Chef Vaults
+
+Following entries must be set in the knife credentials vault and updated when the cookbook is added
+to a node via a role or run-list
+1. **pg-airflow** : Must contain a password key/value for Postgres access
+2. **ldap-bind** or **ldap-bind-dev** : Must include **username** and **password** key/values which contains the Ldap bind system user credentials.
+
+## Required Chef Data Bags
+
+Following data bags are used in this cookbook
+- None
+
+
 ## airflow versions 1.10.4 to 1.10.7
 
 following core pip packages should be reinstalled if higher version is installed during deployment

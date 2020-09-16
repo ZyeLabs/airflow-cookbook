@@ -21,7 +21,7 @@ db_engine = node['airflow']['database']['engine']
 db_server = node['airflow']['database']['server']
 db_port = node['airflow']['database']['port']
 db_name = node['airflow']['database']['name']
-ldap_bind_pass = ChefVault::Item.load(:credentials, 'ldap-bind')['password']
+ldap_bind_pass = ChefVault::Item.load(:credentials, node['airflow']["config"]["ldap"]["vault_pass_key"])['password']
 
 node.default["airflow"]["config"]["core"]["sql_alchemy_conn"] = "#{db_engine}://#{db_user}:#{db_pass}@#{db_server}:#{db_port}/#{db_name}"
 node.default["airflow"]["config"]["ldap"]["bind_password"] = ldap_bind_pass
@@ -108,6 +108,18 @@ template "ulimits" do
     nofile: node["airflow"]["ulimit"]["nofile"],
     nproc: node["airflow"]["ulimit"]["nproc"]
   )
+end
+
+template "webserver_config.py" do
+  path ::File.join(node["airflow"]["home"], "webserver_config.py")
+  source "webserver_config.py.erb"
+  owner node['airflow']['user']
+  group node['airflow']['group']
+  mode '600'
+  variables(
+    config: node['airflow']['config']
+  )
+  notifies :restart, 'service[airflow-webserver]', :delayed
 end
 
 service "airflow-webserver" do

@@ -13,7 +13,7 @@
 # limitations under the License.
 
 airflow_user = node["airflow"]["user"]
-keytab_dir = node['kerberos']['kdc']['keytab_dir']
+keytab_dir = node['airflow']["config"]["kerberos"]["keytab_dir"]
 airflow_principal = [airflow_user,node['fqdn']].join("/")
 keytab_filename = "#{airflow_user}.service.keytab"
 airflow_keytab = ::File.join(keytab_dir,keytab_filename)
