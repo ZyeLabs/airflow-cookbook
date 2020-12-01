@@ -49,3 +49,17 @@
 - Enable rbac role-based authorisation
 - Add webserver_config.py template for fab-based backend
 - Refactor ldap attributes
+
+## 1.0.8
+
+- Add cron job to force restart scheduler per defined interval
+- Improve service recipes to reload systemd upon modification
+
+## 1.0.9
+
+- Configure SMTP for emails
+
+## 1.0.10
+
+- Increase paralleism
+

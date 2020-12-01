@@ -48,7 +48,11 @@ default["airflow"]["init_system"] = node["airflow"]["is_upstart"] ? "upstart" : 
 default["airflow"]["env_path"] = node["platform_family"] == "debian" ? "/etc/default/airflow" : "/etc/sysconfig/airflow"
  default['airflow']["scheduler_runs"] = 5
 # Number of seconds to execute before exiting
-default['airflow']["scheduler_duration"] = 21600
+# setting it to a high value if a cron restart is being used
+default['airflow']["scheduler_duration"] = 2592000
+# rather using cron to restart the scheduler
+default['airflow']["scheduler_cron"]["hour"] = '23'
+default['airflow']["scheduler_cron"]["minute"] = '30'
 
 
 # Python config
@@ -86,7 +90,8 @@ default["airflow"]["config"]["core"]["sql_alchemy_conn"] = "postgresql+psycopg2:
 
 default["airflow"]["config"]["core"]["sql_alchemy_conn"] = "sqlite:///#{node["airflow"]["home"]}/airflow.db"
 default["airflow"]["config"]["core"]["sql_alchemy_schema"] = "public"
-default['airflow']["config"]["core"]["parallelism"] = 16
+# the maximum number of concurrent tasks across all the workers and DAGs
+default['airflow']["config"]["core"]["parallelism"] = 32
 # max number of tasks that can be running per DAG (across multiple DAG runs) concurrently
 default['airflow']["config"]["core"]["dag_concurrency"] = 16
 default['airflow']["config"]["core"]["dags_are_paused_at_creation"] = true
@@ -168,6 +173,13 @@ default['airflow']["config"]["fab"]["auth_type"] = "AUTH_LDAP"
 # Wehther to allow user self registration upon first login
 default['airflow']["config"]["fab"]["auth_user_registration"] = 'True'
 # The default user self registration role
-default['airflow']["config"]["fab"]["auth_user_registration_role"] = "Guest"
+default['airflow']["config"]["fab"]["auth_user_registration_role"] = "Admin"
 
+#
+# smtp --------------------------------------------------------------
+#
+
+default['airflow']["config"]["smtp"]["host"] = node["smtp"]["host"]
+default['airflow']["config"]["smtp"]["port"] = node["smtp"]["port"]
+default['airflow']["config"]["smtp"]["from_address"] = "airflow@EISHadoop.cellc.net"
 

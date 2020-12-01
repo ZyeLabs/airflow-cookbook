@@ -122,6 +122,7 @@ template "webserver_config.py" do
   notifies :restart, 'service[airflow-webserver]', :delayed
 end
 
+
 service "airflow-webserver" do
   action :nothing
   only_if "systemctl list-units --full -all | grep -Fq 'airflow-webserver.service'"

@@ -35,8 +35,14 @@ template service_target do
     :env_path => node["airflow"]["env_path"],
     :home_path => node["airflow"]["home_current"],
   })
+  notifies :run, "execute[reload-systemd]", :immediately
 end
 
 service "airflow-webserver" do
   action [ :enable, :start ]
+end
+
+execute "reload-systemd" do
+  command 'systemctl daemon-reload'
+  action :nothing
 end

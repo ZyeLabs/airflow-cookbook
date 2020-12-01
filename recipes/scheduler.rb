@@ -35,8 +35,26 @@ template service_target do
     :env_path => node["airflow"]["env_path"],
     :home_path => node["airflow"]["home_current"],
   })
+  notifies :run, "execute[reload-systemd]", :immediately
 end
 
 service "airflow-scheduler" do
   action [ :enable, :start ]
 end
+
+execute "reload-systemd" do
+  command 'systemctl daemon-reload'
+  action :nothing
+end
+
+# Hard restart scheduler every x hours
+cron 'scheduler-restart' do
+  user "root"
+  minute node['airflow']["scheduler_cron"]["minute"]
+  hour node['airflow']["scheduler_cron"]["hour"]
+  day '*'
+  command "/usr/sbin/service airflow-scheduler restart"
+  only_if "systemctl list-units --full -all | grep -Fq 'airflow-scheduler.service'"
+  action :create
+end
+
